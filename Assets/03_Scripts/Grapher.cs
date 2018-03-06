@@ -9,6 +9,12 @@ public class Grapher : MonoBehaviour{
 	public GameObject DLR;
 	public GameObject meshPrefab;
 	public GameObject pointPrefab;
+	public Transform leftHand;
+
+	private bool leftGrip;
+	private float prevA  = 0;
+	private float firstLeftRot = 0;
+
 	[Space(20)]
 	[Range (2, 100)]
 	public int Sres = 10;
@@ -126,6 +132,20 @@ public class Grapher : MonoBehaviour{
 		// for(int i=0; i<Sres; i++){
 		// }
 	}
+
+	public void setLeftGrip(bool b)
+	{
+		leftGrip = b;
+		if (leftGrip)
+		{
+			firstLeftRot = leftHand.rotation.eulerAngles.z/180f*3.14159f;
+		}
+		else
+		{
+			prevA = a;
+		}
+	}
+
 	void Update(){
 		for(int i=0; i<lrs.Count; i++){
 			lrs[i].startWidth = scale*0.03f;
@@ -134,7 +154,8 @@ public class Grapher : MonoBehaviour{
 		// 	lrs[i].startWidth = scale*0.01f;
 		// }
 	}
-	void FixedUpdate(){
+	public void FixedUpdate(){
+		/*
 		if(da!=0){
 			if(da>0){
 				a += 0.01f;
@@ -143,6 +164,13 @@ public class Grapher : MonoBehaviour{
 			}
 			UpdatePoints();
 		}
+		*/
+		//a += da/100;
+		if (leftGrip)
+		{
+			a = prevA + firstLeftRot - leftHand.rotation.eulerAngles.z/180f*3.14159f;
+		}
+		UpdatePoints();
 	}
 	void Start (){
 		points = new GameObject[Sres, Tres];

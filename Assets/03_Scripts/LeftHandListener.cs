@@ -148,11 +148,13 @@ namespace VRTK.Examples
         private void DoGripHairlineStart(object sender, ControllerInteractionEventArgs e)
         {
             DebugLogger(VRTK_ControllerReference.GetRealIndex(e.controllerReference), "GRIP", "hairline start", e);
+            grapher.setLeftGrip(true);
         }
 
         private void DoGripHairlineEnd(object sender, ControllerInteractionEventArgs e)
         {
             DebugLogger(VRTK_ControllerReference.GetRealIndex(e.controllerReference), "GRIP", "hairline end", e);
+            grapher.setLeftGrip(false);
         }
 
         private void DoGripClicked(object sender, ControllerInteractionEventArgs e)
