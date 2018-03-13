@@ -431,6 +431,11 @@ Prefab:
       propertyPath: grapher
       value: 
       objectReference: {fileID: 1670805603}
+    - target: {fileID: 114807621800934326, guid: b2eb47ca2b7260a4fb6d211438a21537,
+        type: 2}
+      propertyPath: autoPopulateObjectReferences
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b2eb47ca2b7260a4fb6d211438a21537, type: 2}
   m_IsPrefabParent: 0
@@ -539,12 +544,12 @@ MonoBehaviour:
   pointPrefab: {fileID: 1587370282107790, guid: a3069205c8d77c942adb2b92ca16ae4a,
     type: 2}
   leftHand: {fileID: 137365256}
-  Sres: 20
-  Tres: 20
-  maxS: 3.14159
-  maxT: 3.14159
-  minS: -3.14159
-  minT: -3.14159
+  Sres: 4
+  Tres: 4
+  maxS: 6.28318
+  maxT: 6.28318
+  minS: 0
+  minT: 0
   a: 0
 --- !u!4 &1670805604
 Transform:

@@ -37,22 +37,36 @@ public class Grapher : MonoBehaviour{
 	// private float a = 0f;
 	float fx (float s, float t){
 		// return (1.25f+0.5f*Mathf.Cos(s))*Mathf.Cos(t);
-		return Mathf.Cos(s);
+		//return Mathf.Cos(s);
 		// return s;
+		//complex plot
+		//return s*Mathf.Cos(t);
+		return Mathf.Cos(s)*Mathf.Cos(t);
 	}
 	float fy (float s, float t){
 		// return (1.25f+0.5f*Mathf.Cos(s))*Mathf.Sin(t);
-		return Mathf.Cos(a)*Mathf.Sin(s)+Mathf.Sin(a)*Mathf.Sin(t);
+		//return Mathf.Cos(a)*Mathf.Sin(s)+Mathf.Sin(a)*Mathf.Sin(t);
 		// return Mathf.Cos(a)*s+Mathf.Sin(a)*Mathf.Exp(s)*Mathf.Cos(t);
+		//return Mathf.Sin(s);
+		//complex plot
+		//return s*Mathf.Sin(t);
+		return Mathf.Cos(s)*Mathf.Sin(t);
 	}
 	float fu (float s, float t){
 		// return 0.5f*Mathf.Sin(s);
-		return Mathf.Cos(t);
+		//return Mathf.Cos(t);
 		// return Mathf.Exp(s)*Mathf.Sin(t);
+		//complex plot
+		//return s*s*Mathf.Cos(2*t);
+		return Mathf.Sin(s)*Mathf.Cos(t);
 	}
 	float fv (float s, float t){
-		return -Mathf.Sin(a)*Mathf.Sin(s)+Mathf.Cos(a)*Mathf.Sin(t);
+		//return -Mathf.Sin(a)*Mathf.Sin(s)+Mathf.Cos(a)*Mathf.Sin(t);
 		// return -Mathf.Sin(a)*s+Mathf.Cos(a)*Mathf.Exp(s)*Mathf.Cos(t);
+		//return Mathf.Sin(t);
+		//complex plot
+		//return s*s*Mathf.Sin(2*t);
+		return Mathf.Sin(s)*Mathf.Sin(t);
 	}
 	public void Invert(){
 		Vector3 o = new Vector3(0,3,0);
@@ -72,18 +86,66 @@ public class Grapher : MonoBehaviour{
 	public void ChangeA(float d){
 		da = d;
 	}
+
+
+
+	void FourRotate(int ax1, int ax2, float x, float y, float u, float v,
+																	  out float x_rot, out float y_rot, out float u_rot, out float v_rot)
+	{
+		float[] coor = new float[] {x, y, u, v};
+		float[] coor_rot = new float[4];
+		for (int i = 0; i < 4; i++)
+		{
+			if (i == ax1)
+			{
+				coor_rot[i] = Mathf.Cos(a)*coor[ax1] + Mathf.Sin(a)*coor[ax2];
+			}
+			else if (i == ax2)
+			{
+				coor_rot[i] = -Mathf.Sin(a)*coor[ax1] + Mathf.Cos(a)*coor[ax2];
+			}
+			else
+			{
+				coor_rot[i] = coor[i];
+			}
+		}
+
+		x_rot = coor_rot[0];
+		y_rot = coor_rot[1];
+		u_rot = coor_rot[2];
+		v_rot = coor_rot[3];
+	}
+
 	void UpdatePoints(){
 		for (int s = 0; s < Sres; s++){
 			for (int t = 0; t < Tres; t++){
 				GameObject p = points[s, t];
 				float cS = ((float)((maxS-minS) * s) / Sres) + minS;
 				float cT = ((float)((maxT-minT) * t) / Tres) + minT;
-				float x = (1/(Mathf.Sqrt(2)-fv(cS, cT)))*fx(cS, cT);
-				float y = (1/(Mathf.Sqrt(2)-fv(cS, cT)))*fy(cS, cT);
-				float z = (1/(Mathf.Sqrt(2)-fv(cS, cT)))*fu(cS, cT);
+				// torus
+				//float x = (1/(Mathf.Sqrt(2)-fv(cS, cT)))*fx(cS, cT);
+				//float y = (1/(Mathf.Sqrt(2)-fv(cS, cT)))*fy(cS, cT);
+				//float z = (1/(Mathf.Sqrt(2)-fv(cS, cT)))*fu(cS, cT);
+
 				// float x = fx(cS, cT);
 				// float y = fy(cS, cT);
 				// float z = fu(cS, cT);
+//(Mathf.Cos(a)*fv(cS, cT) - Mathf.Sin(a)*fu(cS, cT))
+
+				/*
+				float x_rot = fx(cS, cT);
+				float y_rot = Mathf.Cos(a)*fy(cS, cT) + Mathf.Sin(a)*fv(cS, cT);
+				float u_rot = fu(cS, cT);
+				float v_rot = -Mathf.Sin(a)*fy(cS, cT) + Mathf.Cos(a)*fv(cS, cT);
+				*/
+
+				float x_rot, y_rot, u_rot, v_rot;
+				FourRotate(0, 3, fx(cS, cT), fy(cS, cT), fu(cS, cT), fv(cS, cT),
+											   out x_rot, out y_rot, out u_rot, out v_rot);
+
+				float x = x_rot / (Mathf.Sqrt(2) - v_rot);
+				float y = y_rot / (Mathf.Sqrt(2) - v_rot);
+				float z = u_rot / (Mathf.Sqrt(2) - v_rot);
 
 				p.transform.localPosition = new Vector3 (x, y, z);
 			}
@@ -165,7 +227,8 @@ public class Grapher : MonoBehaviour{
 			UpdatePoints();
 		}
 		*/
-		//a += da/100;
+		a += da/100;
+
 		if (leftGrip)
 		{
 			a = prevA + firstLeftRot - leftHand.rotation.eulerAngles.z/180f*3.14159f;
