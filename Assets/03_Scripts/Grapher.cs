@@ -27,6 +27,9 @@ public class Grapher : MonoBehaviour{
 	public float minT;
 	[Space (20)]
 
+	public int rotax1;
+	public int rotax2;
+
 	private List<LineRenderer> lrs = new List<LineRenderer>();
 	private List<MeshFilter> meshes = new List<MeshFilter>();
 	private GameObject[,] points;
@@ -35,13 +38,17 @@ public class Grapher : MonoBehaviour{
 	private float da = 0f;
 	private float e = 2.7182818f;
 	// private float a = 0f;
+
+	public float b = 1;
 	float fx (float s, float t){
 		// return (1.25f+0.5f*Mathf.Cos(s))*Mathf.Cos(t);
 		//return Mathf.Cos(s);
 		// return s;
 		//complex plot
 		//return s*Mathf.Cos(t);
-		return Mathf.Cos(s)*Mathf.Cos(t);
+		// sphere
+		//return Mathf.Cos(s)*Mathf.Cos(t);
+		return s*s*Mathf.Cos(2*t);
 	}
 	float fy (float s, float t){
 		// return (1.25f+0.5f*Mathf.Cos(s))*Mathf.Sin(t);
@@ -50,7 +57,8 @@ public class Grapher : MonoBehaviour{
 		//return Mathf.Sin(s);
 		//complex plot
 		//return s*Mathf.Sin(t);
-		return Mathf.Cos(s)*Mathf.Sin(t);
+		//return Mathf.Cos(s)*Mathf.Sin(t);
+		return s*s*Mathf.Sin(2*t);
 	}
 	float fu (float s, float t){
 		// return 0.5f*Mathf.Sin(s);
@@ -58,7 +66,8 @@ public class Grapher : MonoBehaviour{
 		// return Mathf.Exp(s)*Mathf.Sin(t);
 		//complex plot
 		//return s*s*Mathf.Cos(2*t);
-		return Mathf.Sin(s)*Mathf.Cos(t);
+		//return Mathf.Sin(s)*Mathf.Cos(t);
+		return s*s*s * Mathf.Cos(3*t) + s*Mathf.Cos(t)*b;
 	}
 	float fv (float s, float t){
 		//return -Mathf.Sin(a)*Mathf.Sin(s)+Mathf.Cos(a)*Mathf.Sin(t);
@@ -66,8 +75,12 @@ public class Grapher : MonoBehaviour{
 		//return Mathf.Sin(t);
 		//complex plot
 		//return s*s*Mathf.Sin(2*t);
-		return Mathf.Sin(s)*Mathf.Sin(t);
+		//return Mathf.Sin(s)*Mathf.Sin(t);
+
+		return s*s*s * Mathf.Sin(3*t);
 	}
+
+
 	public void Invert(){
 		Vector3 o = new Vector3(0,3,0);
 		float r = 1f;
@@ -140,12 +153,12 @@ public class Grapher : MonoBehaviour{
 				*/
 
 				float x_rot, y_rot, u_rot, v_rot;
-				FourRotate(0, 3, fx(cS, cT), fy(cS, cT), fu(cS, cT), fv(cS, cT),
+				FourRotate(rotax1, rotax2, fx(cS, cT), fy(cS, cT), fu(cS, cT), fv(cS, cT),
 											   out x_rot, out y_rot, out u_rot, out v_rot);
 
-				float x = x_rot / (Mathf.Sqrt(2) - v_rot);
-				float y = y_rot / (Mathf.Sqrt(2) - v_rot);
-				float z = u_rot / (Mathf.Sqrt(2) - v_rot);
+				float x = x_rot; // (Mathf.Sqrt(2) - v_rot);
+				float y = y_rot; // (Mathf.Sqrt(2) - v_rot);
+				float z = u_rot; // (Mathf.Sqrt(2) - v_rot);
 
 				p.transform.localPosition = new Vector3 (x, y, z);
 			}
@@ -263,6 +276,7 @@ public class Grapher : MonoBehaviour{
 	public void SetScale(float f){
 		scale = f;
 	}
+
 	void DrawLines(){
 		for(int i=0; i<Sres; i++){
 			GameObject e = Instantiate(ULR) as GameObject;
